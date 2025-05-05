@@ -85,7 +85,7 @@
     <IntDir>.\release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
     <TargetName>gamex86</TargetName>
-    <OutDir>..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\Quake 2\rotmod</OutDir>
+    <OutDir>..\..\YamagiQuake2\quake2-8.50\rotmod</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Alpha|Win32'">
     <OutDir>.\..\ReleaseAXP\</OutDir>

@@ -959,6 +959,11 @@ struct gclient_s
 
 	edict_t		*chase_target;		// player we are chasing
 	qboolean	update_chase;		// need to update chase info?
+
+	edict_t		*beacon;			// track beacon
+	qboolean	beacon_throw_down;  // For button tracking
+	qboolean    beacon_placed;  // NEW: Tracks beacon state separately
+	vec3_t      beacon_position;
 };
 
 

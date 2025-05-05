@@ -781,6 +781,92 @@ void Cmd_Wave_f (edict_t *ent)
 
 /*
 ==================
+Cmd_ThowBeacon_f
+==================
+*/
+void Cmd_ThrowBeacon_f(edict_t* ent) {
+	// Store position directly in client struct
+	VectorCopy(ent->s.origin, ent->client->beacon_position);
+	ent->client->beacon_position[2] += 16.0f; // Raise above ground
+
+	// Create visual entity
+	if (ent->client->beacon) {
+		G_FreeEdict(ent->client->beacon);
+	}
+
+	edict_t* beacon = G_Spawn();
+	beacon->classname = "beacon";
+	VectorCopy(ent->client->beacon_position, beacon->s.origin);
+	beacon->s.modelindex = gi.modelindex("models/items/spawngro2/tris.md2");
+
+	// Double-link the reference
+	ent->client->beacon = beacon;
+	ent->client->beacon_placed = true;
+
+	ent->s.frame = FRAME_attack2;
+
+	gi.dprintf("BEACON CONFIRMED: %p at %.1f %.1f %.1f\n",
+		beacon,
+		beacon->s.origin[0],
+		beacon->s.origin[1],
+		beacon->s.origin[2]);
+}
+
+/*
+==================
+Cmd_Teleport_f
+==================
+*/
+	void Cmd_Teleport_f(edict_t * ent) {
+		vec3_t dest;
+
+		// fallback if no beacon was placed
+		if (!ent->client->beacon_placed) {
+			gi.cprintf(ent, PRINT_HIGH, "No beacon placed!\n");
+			return;
+		}
+
+		// use beacon entity if available
+		if (ent->client->beacon) {
+			VectorCopy(ent->client->beacon->s.origin, dest);
+		}
+		else {
+			VectorCopy(ent->client->beacon_position, dest);
+		}
+
+		// trace upward to find safe height
+		vec3_t trace_end = { dest[0], dest[1], dest[2] + 72.0f };
+		trace_t tr = gi.trace(dest, ent->mins, ent->maxs, trace_end, ent, MASK_PLAYERSOLID);
+
+		// adjust height
+		dest[2] = tr.endpos[2] - 1.0f;
+
+		// final check for blocked space
+		if (gi.trace(dest, ent->mins, ent->maxs, dest, ent, MASK_PLAYERSOLID).fraction == 1.0) {
+			VectorCopy(dest, ent->s.origin);
+			gi.sound(ent, CHAN_AUTO, gi.soundindex("world/teleport.wav"), 1, ATTN_NORM, 0);
+			gi.dprintf("SUCCESS: Teleported to %.1f %.1f %.1f\n", dest[0], dest[1], dest[2]);
+		}
+		else {
+			gi.cprintf(ent, PRINT_HIGH, "Destination blocked at %.1f %.1f %.1f\n",
+				dest[0], dest[1], dest[2]);
+		}
+	}
+
+
+/*
+==================
+Cmd_ThrowBeacon_Release_f
+==================
+*/
+void Cmd_ThrowBeacon_Release_f(edict_t* ent) {
+	gi.dprintf("DEBUG: releasebeacon called for player %d\n", ent - g_edicts);
+	ent->client->beacon_throw_down = false;
+}
+
+
+/*
+==================
 Cmd_Say_f
 ==================
 */
@@ -938,6 +1024,22 @@ void ClientCommand (edict_t *ent)
 	{
 		Cmd_Help_f (ent);
 		return;
+	}
+	// BEACON COMMANDS
+	if (Q_stricmp(cmd, "throwbeacon") == 0) {
+		gi.dprintf("throwbeacon command received\n");  // DEBUG
+		Cmd_ThrowBeacon_f(ent);
+		return;  
+	}
+	if (Q_stricmp(cmd, "releasebeacon") == 0) {
+		gi.dprintf("throwbeacon command received\n");  // DEBUG
+		Cmd_ThrowBeacon_Release_f(ent);
+		return;  
+	}
+	if (Q_stricmp(cmd, "teleport") == 0) {
+		gi.dprintf("teleport command received\n");  // DEBUG
+		Cmd_Teleport_f(ent);
+		return;  
 	}
 
 	if (level.intermissiontime)
