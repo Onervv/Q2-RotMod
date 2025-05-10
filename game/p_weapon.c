@@ -829,20 +829,21 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	// Middle Blaster fire 
-	fire_blaster (ent, start, forward, damage , 400, effect, hyper);
-	start[0] += right[0] * 10;
+	// Revert on blaster fire 
+	fire_blaster (ent, start, forward, damage , 5, effect, hyper);
+
+	/*start[0] += right[0] * 10;
 	start[1] += right[1] * 10;
-	start[2] += right[2] * 10;
+	start[2] += right[2] * 10;*/
 
-	// Weaker right
-	fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
-	start[0] -= right[0] * 20;
-	start[1] -= right[1] * 20;
-	start[2] -= right[2] * 20;
+	//// Weaker right
+	//fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
+	//start[0] -= right[0] * 20;
+	//start[1] -= right[1] * 20;
+	//start[2] -= right[2] * 20;
 
-	// Weaker left
-	fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
+	//// Weaker left
+	//fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
