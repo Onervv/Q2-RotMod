@@ -313,6 +313,10 @@ void HelpComputer (edict_t *ent)
 	else
 		sk = "hard+";
 
+	// gi.dprintf("HelpComputer called: help1 = %s, help2 = %s\n", game.helpmessage1, game.helpmessage2);
+	strcpy(game.helpmessage1, "!! WELCOME TO ROTMOD !!\n to get started open up the command prompt\nand give all items");
+	strcpy(game.helpmessage2, "There are various weapon changes\nmovement changes, new\ncommands be sure to experiment, enjoy");
+
 	// send the layout
 	Com_sprintf (string, sizeof(string),
 		"xv 32 yv 8 picn help "			// background
@@ -345,12 +349,12 @@ Display the current help message
 */
 void Cmd_Help_f (edict_t *ent)
 {
-	// this is for backwards compatability
-	if (deathmatch->value)
-	{
-		Cmd_Score_f (ent);
-		return;
-	}
+	//// this is for backwards compatability
+	//if (deathmatch->value)
+	//{
+	//	Cmd_Score_f (ent);
+	//	return;
+	//}
 
 	ent->client->showinventory = false;
 	ent->client->showscores = false;

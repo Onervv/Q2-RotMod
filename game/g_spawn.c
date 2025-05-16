@@ -980,5 +980,11 @@ void SP_worldspawn (edict_t *ent)
 
 	// 63 testing
 	gi.configstring(CS_LIGHTS+63, "a");
+
+	//Override hud
+	strcpy(game.helpmessage1, "WELCOME TO ROT MOD\nTo get started open up the command prompt and give\nyour player all items with the GIVE ALL Command");
+	strcpy(game.helpmessage2, "There are various weapon changes, movement changes, new commands with z and x\nbe sure to experiment alot and enjoy");
+	strcpy(level.level_name, "MY CUSTOM F1 TITLE MESSAGE");
+	
 }
 

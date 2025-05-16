@@ -1655,18 +1655,18 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			PlayerNoise(ent, ent->s.origin, PNOISE_SELF);
 		}
 
-		
-		// FAIL
-		//if (!ent->groundentity && (ucmd->upmove >= 10) && (client->prev_upmove < 10) && !(ent->flags & FL_DOUBLEJUMPED) && (pm.waterlevel == 0))
-		//{
-		//	pm.s.velocity[2] = 270;  // Apply vertical boost for double jump
+		// WORKING
+		if (ucmd->upmove < 0)
+		{
+			//	Increase movement speed while crouching (rolling effect)
+			vec3_t forward;
+			AngleVectors(ent->client->v_angle, forward, NULL, NULL);
+			VectorMA(ent->velocity, 35, forward, ent->velocity);  // Boost speed (tweak value)
 
-		//	gi.sound(ent, CHAN_VOICE, gi.soundindex("*jump1.wav"), 1, ATTN_NORM, 0);
-
-		//	ent->flags |= FL_DOUBLEJUMPED;  // Mark double jump used
-
-		//	PlayerNoise(ent, ent->s.origin, PNOISE_SELF);
-		//}
+			//	Apply yaw shake for rolling visual effect
+			ent->client->kick_angles[YAW] += crandom() * 3.0f;  // Small random yaw shake
+			ent->client->kick_angles[ROLL] += crandom() * 2.0f; // Optional roll shake
+		}
 
 		ent->viewheight = pm.viewheight;
 		ent->waterlevel = pm.waterlevel;

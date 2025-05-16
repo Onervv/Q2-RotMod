@@ -760,9 +760,11 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 {
 	vec3_t	offset, start;
 	vec3_t	forward, right;
+	vec3_t shake;
 	int		damage;
 	float	damage_radius;
 	int		radius_damage;
+
 
 	damage = 100 + (int)(random() * 20.0);
 	radius_damage = 120;
@@ -772,6 +774,11 @@ void Weapon_RocketLauncher_Fire (edict_t *ent)
 		damage *= 4;
 		radius_damage *= 4;
 	}
+
+	shake[0] = crandom() * 10;  // Pitch shake (up/down)
+	shake[1] = crandom() * 10;  // Yaw shake (left/right)            
+
+	VectorAdd(ent->client->kick_angles, shake, ent->client->kick_angles);
 
 	AngleVectors (ent->client->v_angle, forward, right, NULL);
 
@@ -838,9 +845,9 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 
 	//// Weaker right
 	//fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
-	//start[0] -= right[0] * 20;
-	//start[1] -= right[1] * 20;
-	//start[2] -= right[2] * 20;
+	/*start[0] -= right[0] * 20;
+	start[1] -= right[1] * 20;
+	start[2] -= right[2] * 20;*/
 
 	//// Weaker left
 	//fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
@@ -1201,7 +1208,7 @@ void weapon_shotgun_fire (edict_t *ent)
 	vec3_t		forward, right;
 	vec3_t		offset;
 	int			damage = 4;
-	int			kick = 8;
+	int			kick = 5;
 
 	if (ent->client->ps.gunframe == 9)
 	{
@@ -1263,6 +1270,8 @@ void weapon_supershotgun_fire (edict_t *ent)
 
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -2;
+	ent->velocity[1] += 150 + random() * 200;;
+	ent->velocity[2] += 150 + random() * 200;;
 
 	VectorSet(offset, 0, 8,  ent->viewheight-8);
 	P_ProjectSource (ent->client, ent->s.origin, offset, forward, right, start);

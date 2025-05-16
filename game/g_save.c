@@ -219,6 +219,10 @@ void InitGame (void)
 	game.maxclients = maxclients->value;
 	game.clients = gi.TagMalloc (game.maxclients * sizeof(game.clients[0]), TAG_GAME);
 	globals.num_edicts = game.maxclients+1;
+
+	// Check New Message
+	strcpy(game.helpmessage1, "WELCOME TO ROT MOD\nTo get started open up the command prompt and give\nyour player all items with the GIVE ALL Command");
+	strcpy(game.helpmessage2, "There are various weapon changes, movement changes, new commands with z and x\nbe sure to experiment alot and enjoy");
 }
 
 //=========================================================

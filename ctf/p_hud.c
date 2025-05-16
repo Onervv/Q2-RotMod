@@ -331,6 +331,8 @@ void HelpComputer (edict_t *ent)
 	else
 		sk = "hard+";
 
+	gi.dprintf("HelpComputer called: help1 = %s, help2 = %s\n", game.helpmessage1, game.helpmessage2);
+
 	// send the layout
 	Com_sprintf (string, sizeof(string),
 		"xv 32 yv 8 picn help "			// background

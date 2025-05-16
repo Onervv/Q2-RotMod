@@ -475,35 +475,40 @@ static void Grenade_Explode (edict_t *ent)
 	G_FreeEdict (ent);
 }
 
-static void Grenade_Touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *surf)
+static void Grenade_Touch(edict_t* ent, edict_t* other, cplane_t* plane, csurface_t* surf)
 {
 	if (other == ent->owner)
 		return;
 
 	if (surf && (surf->flags & SURF_SKY))
 	{
-		G_FreeEdict (ent);
+		G_FreeEdict(ent);
 		return;
 	}
 
-	if (!other->takedamage)
+	VectorScale(ent->velocity, 1.3, ent->velocity);  // Very bouncy effect
+
+	// Play bounce sound (but don't return after)
+	if (ent->spawnflags & 1)
 	{
-		if (ent->spawnflags & 1)
-		{
-			if (random() > 0.5)
-				gi.sound (ent, CHAN_VOICE, gi.soundindex ("weapons/hgrenb1a.wav"), 1, ATTN_NORM, 0);
-			else
-				gi.sound (ent, CHAN_VOICE, gi.soundindex ("weapons/hgrenb2a.wav"), 1, ATTN_NORM, 0);
-		}
+		if (random() > 0.5)
+			gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/hgrenb1a.wav"), 1, ATTN_NORM, 0);
 		else
-		{
-			gi.sound (ent, CHAN_VOICE, gi.soundindex ("weapons/grenlb1b.wav"), 1, ATTN_NORM, 0);
-		}
-		return;
+			gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/hgrenb2a.wav"), 1, ATTN_NORM, 0);
+	}
+	else
+	{
+		gi.sound(ent, CHAN_VOICE, gi.soundindex("weapons/grenlb1b.wav"), 1, ATTN_NORM, 0);
 	}
 
-	ent->enemy = other;
-	Grenade_Explode (ent);
+	// Always apply splash damage on bounce
+	T_RadiusDamage(ent, ent->owner, 40, other, 80, MOD_HANDGRENADE);
+
+	// Always show explosion effect on bounce
+	gi.WriteByte(svc_temp_entity);
+	gi.WriteByte(TE_EXPLOSION1);
+	gi.WritePosition(ent->s.origin);
+	gi.multicast(ent->s.origin, MULTICAST_PVS);
 }
 
 void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int speed, float timer, float damage_radius)
@@ -518,8 +523,8 @@ void fire_grenade (edict_t *self, vec3_t start, vec3_t aimdir, int damage, int s
 	grenade = G_Spawn();
 	VectorCopy (start, grenade->s.origin);
 	VectorScale (aimdir, speed, grenade->velocity);
-	VectorMA (grenade->velocity, 200 + crandom() * 10.0, up, grenade->velocity);
-	VectorMA (grenade->velocity, crandom() * 10.0, right, grenade->velocity);
+	VectorMA (grenade->velocity, 400 + crandom() * 20.0, up, grenade->velocity);
+	VectorMA (grenade->velocity, crandom() * 20.0, right, grenade->velocity);
 	VectorSet (grenade->avelocity, 300, 300, 300);
 	grenade->movetype = MOVETYPE_BOUNCE;
 	grenade->clipmask = MASK_SHOT;
