@@ -177,16 +177,16 @@ static void fire_lead (edict_t *self, vec3_t start, vec3_t aimdir, int damage, i
 				if (tr.contents & CONTENTS_WATER)
 				{
 					if (strcmp(tr.surface->name, "*brwater") == 0)
-						color = SPLASH_BROWN_WATER;
+						color = SPLASH_LAVA;
 					else
-						color = SPLASH_BLUE_WATER;
+						color = SPLASH_LAVA;
 				}
 				else if (tr.contents & CONTENTS_SLIME)
-					color = SPLASH_SLIME;
+					color = SPLASH_LAVA;
 				else if (tr.contents & CONTENTS_LAVA)
 					color = SPLASH_LAVA;
 				else
-					color = SPLASH_UNKNOWN;
+					color = SPLASH_LAVA;
 
 				if (color != SPLASH_UNKNOWN)
 				{
@@ -342,13 +342,30 @@ void blaster_touch (edict_t *self, edict_t *other, cplane_t *plane, csurface_t *
 	G_FreeEdict (self);
 }
 
+// NEW CHECK
+void Blaster_Accelerate(edict_t* bolt)
+{
+	float accel_factor = 1.4f; // Increase velocity by 40%
+	VectorScale(bolt->velocity, accel_factor, bolt->velocity);
+
+	// Cap the speed to avoid infinite acceleration
+	if (VectorLength(bolt->velocity) > 2000) {
+		// Stop accelerating
+		bolt->think = NULL;
+	}
+	else {
+		// Keep thinking every frame
+		bolt->nextthink = level.time + 0.1;
+	}
+}
+
 void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, int effect, qboolean hyper)
 {
 	edict_t	*bolt;
 	trace_t	tr;
 
 	VectorNormalize (dir);
-
+	
 	bolt = G_Spawn();
 	bolt->svflags = SVF_DEADMONSTER;
 	// yes, I know it looks weird that projectiles are deadmonsters
@@ -366,14 +383,20 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 	bolt->s.effects |= effect;
 	VectorClear (bolt->mins);
 	VectorClear (bolt->maxs);
-	bolt->s.modelindex = gi.modelindex ("models/objects/laser/tris.md2");
+	bolt->s.modelindex = gi.modelindex ("sprites/s_bfg1.sp2"); // ---> models/objects/rocket/tris.md2
 	bolt->s.sound = gi.soundindex ("misc/lasfly.wav");
 	bolt->owner = self;
 	bolt->touch = blaster_touch;
-	bolt->nextthink = level.time + 2;
+	bolt->nextthink = level.time + 2; 
 	bolt->think = G_FreeEdict;
 	bolt->dmg = damage;
 	bolt->classname = "bolt";
+
+	// START
+	bolt->think = Blaster_Accelerate;
+	bolt->nextthink = level.time + 0.1;
+	// END
+
 	if (hyper)
 		bolt->spawnflags = 1;
 	gi.linkentity (bolt);
@@ -387,7 +410,7 @@ void fire_blaster (edict_t *self, vec3_t start, vec3_t dir, int damage, int spee
 		VectorMA (bolt->s.origin, -10, dir, bolt->s.origin);
 		bolt->touch (bolt, tr.ent, NULL, NULL);
 	}
-}	
+}
 
 
 /*
@@ -617,6 +640,56 @@ void rocket_touch (edict_t *ent, edict_t *other, cplane_t *plane, csurface_t *su
 	G_FreeEdict (ent);
 }
 
+void rocket_homing_think(edict_t* ent)
+{
+	edict_t* target = NULL;
+	float best_dist = 1000.0f; // Max homing range
+	vec3_t dir, target_dir;
+	float speed = VectorLength(ent->velocity);
+	
+	// Find the nearest target
+	for (int i = 1; i < globals.num_edicts; i++) {
+		edict_t* other = &g_edicts[i];
+		if (!other->inuse || other == ent->owner) continue;
+		if (!(other->svflags & SVF_MONSTER) && !other->client) continue;
+		if (other->health <= 0) continue;
+		if (other->svflags & SVF_DEADMONSTER) continue;
+		if (strcmp(other->classname, "monster_spawnpoint") == 0) continue;
+
+		// Trace Check
+		trace_t tr = gi.trace(ent->s.origin, NULL, NULL, other->s.origin, ent, MASK_SHOT);
+
+		if (tr.ent != other) {
+			// There's something between the rocket and the target, so skip this target
+			continue;
+		}
+
+		vec3_t to_target;
+		VectorSubtract(other->s.origin, ent->s.origin, to_target);
+		float dist = VectorLength(to_target);
+
+		if (dist < best_dist) {
+			best_dist = dist;
+			target = other;
+		}
+	}
+
+	// Steer toward the target
+	if (target) {
+		VectorSubtract(target->s.origin, ent->s.origin, target_dir);
+		VectorNormalize(target_dir);
+
+		VectorNormalize(ent->velocity);
+		VectorMA(ent->velocity, 0.25f, target_dir, dir); // smooth turning
+		VectorNormalize(dir);
+		VectorScale(dir, speed, ent->velocity);
+	}
+
+	ent->nextthink = level.time + 0.1f;
+	ent->think = rocket_homing_think;
+}
+
+
 void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed, float damage_radius, int radius_damage)
 {
 	edict_t	*rocket;
@@ -642,6 +715,10 @@ void fire_rocket (edict_t *self, vec3_t start, vec3_t dir, int damage, int speed
 	rocket->dmg_radius = damage_radius;
 	rocket->s.sound = gi.soundindex ("weapons/rockfly.wav");
 	rocket->classname = "rocket";
+
+	// ADDED
+	rocket->nextthink = level.time + 0.1f;
+	rocket->think = rocket_homing_think;
 
 	if (self->client)
 		check_dodge (self, rocket->s.origin, dir, speed);

@@ -68,6 +68,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define FL_NO_KNOCKBACK			0x00000800
 #define FL_POWER_ARMOR			0x00001000	// power armor (if any) is active
 #define FL_RESPAWN				0x80000000	// used for item respawning
+// #define FL_DOUBLEJUMPED			0x00020000	// used for double jump flag
 
 
 #define	FRAMETIME		0.1
@@ -895,9 +896,10 @@ struct gclient_s
 
 	int			ammo_index;
 
-	int			buttons;
-	int			oldbuttons;
+	int			buttons;          // current frame button
+	int			oldbuttons;		  // last frame button
 	int			latched_buttons;
+	// int			prev_upmove;      // track previous player movmenet 
 
 	qboolean	weapon_thunk;
 

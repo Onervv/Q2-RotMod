@@ -829,17 +829,21 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	VectorScale (forward, -2, ent->client->kick_origin);
 	ent->client->kick_angles[0] = -1;
 
-	fire_blaster (ent, start, forward, damage, 1000, effect, hyper);
-	start[0] += right[0] * 10;
+	// Revert on blaster fire 
+	fire_blaster (ent, start, forward, damage , 35, effect, hyper);
+
+	/*start[0] += right[0] * 10;
 	start[1] += right[1] * 10;
-	start[2] += right[2] * 10;
+	start[2] += right[2] * 10;*/
 
-	fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
-	start[0] -= right[0] * 20;
-	start[1] -= right[1] * 20;
-	start[2] -= right[2] * 20;
+	//// Weaker right
+	//fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
+	//start[0] -= right[0] * 20;
+	//start[1] -= right[1] * 20;
+	//start[2] -= right[2] * 20;
 
-	fire_blaster(ent, start, forward, damage, 1000, effect, hyper);
+	//// Weaker left
+	//fire_blaster(ent, start, forward, damage * .50, 275, effect, hyper);
 
 	// send muzzle flash
 	gi.WriteByte (svc_muzzleflash);
@@ -862,7 +866,7 @@ void Weapon_Blaster_Fire (edict_t *ent)
 		damage = 15;
 	else
 		damage = 10;
-	Blaster_Fire (ent, vec3_origin, damage, false, EF_BLASTER);
+	Blaster_Fire (ent, vec3_origin, damage, false, EF_BFG); // ---> EF_BLASTER
 	ent->client->ps.gunframe++;
 }
 
@@ -907,7 +911,7 @@ void Weapon_HyperBlaster_Fire (edict_t *ent)
 			offset[2] = 4 * cos(rotation);
 
 			if ((ent->client->ps.gunframe == 6) || (ent->client->ps.gunframe == 9))
-				effect = EF_HYPERBLASTER;
+				effect = EF_BFG; // ---> EF-HYPERBLASTER
 			else
 				effect = 0;
 			if (deathmatch->value)

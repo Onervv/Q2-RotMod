@@ -1655,6 +1655,19 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 			PlayerNoise(ent, ent->s.origin, PNOISE_SELF);
 		}
 
+		
+		// FAIL
+		//if (!ent->groundentity && (ucmd->upmove >= 10) && (client->prev_upmove < 10) && !(ent->flags & FL_DOUBLEJUMPED) && (pm.waterlevel == 0))
+		//{
+		//	pm.s.velocity[2] = 270;  // Apply vertical boost for double jump
+
+		//	gi.sound(ent, CHAN_VOICE, gi.soundindex("*jump1.wav"), 1, ATTN_NORM, 0);
+
+		//	ent->flags |= FL_DOUBLEJUMPED;  // Mark double jump used
+
+		//	PlayerNoise(ent, ent->s.origin, PNOISE_SELF);
+		//}
+
 		ent->viewheight = pm.viewheight;
 		ent->waterlevel = pm.waterlevel;
 		ent->watertype = pm.watertype;
@@ -1698,6 +1711,7 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	client->oldbuttons = client->buttons;
 	client->buttons = ucmd->buttons;
 	client->latched_buttons |= client->buttons & ~client->oldbuttons;
+	// client->prev_upmove = ucmd->upmove;  FAIL
 
 	// save light level the player is standing on for
 	// monster sighting AI
