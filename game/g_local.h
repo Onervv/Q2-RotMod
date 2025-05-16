@@ -900,6 +900,7 @@ struct gclient_s
 	int			oldbuttons;		  // last frame button
 	int			latched_buttons;
 	// int			prev_upmove;      // track previous player movmenet 
+	qboolean	doublejumped;	  // back for more
 
 	qboolean	weapon_thunk;
 

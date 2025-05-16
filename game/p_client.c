@@ -1577,6 +1577,11 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 	level.current_entity = ent;
 	client = ent->client;
 
+	if (PMF_DUCKED)
+	{
+		client->doublejumped = false;
+	}
+
 	if (level.intermissiontime)
 	{
 		client->ps.pmove.pm_type = PM_FREEZE;
@@ -1644,6 +1649,14 @@ void ClientThink (edict_t *ent, usercmd_t *ucmd)
 
 		VectorCopy (pm.mins, ent->mins);
 		VectorCopy (pm.maxs, ent->maxs);
+
+		
+		if (!ent->groundentity && ucmd->upmove > 10 && client->doublejumped == false)
+		{
+			client->doublejumped = true;
+			ent->velocity[2] = 270;
+		}
+
 
 		client->resp.cmd_angles[0] = SHORT2ANGLE(ucmd->angles[0]);
 		client->resp.cmd_angles[1] = SHORT2ANGLE(ucmd->angles[1]);
