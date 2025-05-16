@@ -830,7 +830,7 @@ void Blaster_Fire (edict_t *ent, vec3_t g_offset, int damage, qboolean hyper, in
 	ent->client->kick_angles[0] = -1;
 
 	// Revert on blaster fire 
-	fire_blaster (ent, start, forward, damage , 5, effect, hyper);
+	fire_blaster (ent, start, forward, damage , 35, effect, hyper);
 
 	/*start[0] += right[0] * 10;
 	start[1] += right[1] * 10;
