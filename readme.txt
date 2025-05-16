@@ -1,29 +1,38 @@
 
-This is the complete source code for Quake 2, version 3.19, buildable with
-visual C++ 6.0.  The linux version should be buildable, but we haven't
-tested it for the release.
+GREETINGS; WELCOME TO BOTMOD. 
 
-The code is all licensed under the terms of the GPL (gnu public license).  
-You should read the entire license, but the gist of it is that you can do 
-anything you want with the code, including sell your new version.  The catch 
-is that if you distribute new binary versions, you are required to make the 
-entire source code available for free to everyone.
+This is a quake 2 modpack that uses the orignal source code. 
+In order to run this you will need an offical copy of Quake 2.
+All mods done to this project are completely free of use and 
+here for the rest of the modding community. By using any
+of the software here you are resposible for the concequences
+they could cause you, I waive all legal responsibility.
 
-The primary intent of this release is for entertainment and educational 
-purposes, but the GPL does allow commercial exploitation if you obey the 
-full license.  If you want to do something commercial and you just can't bear 
-to have your source changes released, we could still negotiate a separate 
-license agreement (for $$$), but I would encourage you to just live with the 
-GPL.
+BOTMOD - Deliverables/Mods Inspired by Metroid Games
+1) Player one movement hack, is a gross attempt to allow
+for client side "rolling" mechanic without touching pmove.c
+2) HyperBlaster/Blaster replaced with BFG projectiles, and 
+custom projectile logic starts shot of slow and increases
+exponentially for more unique gunplay.
+3) RocketLauncher recived a new thinking funtion; Rocket_Homing
+which flags down non-desirable entities and aggresivly track targets.
+4) Heavy Shotgun got a dramatic recoil mod, aswell as enables
+player jump boosting... maybe.
+5) Grenade Launcher got a cool mechanic, inspired by the character
+sprout in brawl stars. Essentially a projectile that will dedonate
+until the end of its timer.
+6) Custom Commands, press 'z' for placing a beacon, press 'x' to
+teleport. It can be alot of things depending on what game we 
+compare this to but lets just say its a recall spell.
+7) Custom Mod Hud; hacked this together by overriding help
+messages in p_hud.c - Gross. 
+8) Added a JetPack which was really just a failed attempt to
+make a double jump. (enjoy infinite jumping on the house)
 
-All of the Q2 data files remain copyrighted and licensed under the 
-original terms, so you cannot redistribute data from the original game, but if 
-you do a true total conversion, you can create a standalone game based on 
-this code.
+I Hope for those who fidn this mod they enjoy it.
 
-Thanks to Robert Duffy for doing the grunt work of building this release.
+CHEERS,
 
-John Carmack
-Id Software
+MICAHEL PERRETTE @ NJIT 
 
 
